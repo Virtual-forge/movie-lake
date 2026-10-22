@@ -57,24 +57,49 @@ async function archivedItem(
 
 /**
  * Full watch data for a TMDB movie: the curated record plus a fresh
- * verification of the Internet Archive item. `row !== null` but
- * `archive === null` means "seeded, but the copy is unverified right
- * now" — an important honest distinction for the watch page.
+ * verification of the Internet Archive item. Three honest outcomes:
+ *
+ * - `film` present → curated free film (`.archive === null` means seeded
+ *   but the copy is unverified right now — the watch page shows that
+ *   distinction);
+ * - `film: null, sourceUnavailable` absent → not a curated free film;
+ * - `film: null, sourceUnavailable: true` → the curation record itself
+ *   could not be read (DB unreachable etc.) — availability is UNKNOWN.
+ *   It must never be presented as "not free": the detail page hides the
+ *   watch CTA (the honest default is to claim nothing) and the watch page
+ *   explains the verification service is down (M8: a database hiccup
+ *   previously took the whole detail page into the error boundary).
  */
+export interface FreeFilmResolution {
+  film: FreeFilmInfo | null;
+  sourceUnavailable?: boolean;
+}
+
 export async function resolveFreeFilm(
   tmdbId: number,
-): Promise<FreeFilmInfo | null> {
+): Promise<FreeFilmResolution> {
   // Request-time data access: the pg connection may not happen inside a
   // prerender (see module comment).
   await connection();
-  const row = await findFreeFilmRow(tmdbId);
-  if (!row) return null;
+  let row: Awaited<ReturnType<typeof findFreeFilmRow>>;
+  try {
+    row = await findFreeFilmRow(tmdbId);
+  } catch (error) {
+    console.error(
+      `[free-film] curation lookup failed for tmdb:${tmdbId}`,
+      error instanceof Error ? error.message : error,
+    );
+    return { film: null, sourceUnavailable: true };
+  }
+  if (!row) return { film: null };
   return {
-    tmdbId,
-    archiveIdentifier: row.archiveIdentifier,
-    license: row.license,
-    licenseUrl: row.licenseUrl ?? undefined,
-    notes: row.notes ?? undefined,
-    archive: await archivedItem(row.archiveIdentifier),
+    film: {
+      tmdbId,
+      archiveIdentifier: row.archiveIdentifier,
+      license: row.license,
+      licenseUrl: row.licenseUrl ?? undefined,
+      notes: row.notes ?? undefined,
+      archive: await archivedItem(row.archiveIdentifier),
+    },
   };
 }

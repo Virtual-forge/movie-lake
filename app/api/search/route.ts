@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { searchMovies, searchTv } from "@/lib/api/tmdb";
+import { discoverMovies, discoverTv, searchMovies, searchTv } from "@/lib/api/tmdb";
 import { toListingList } from "@/lib/normalize";
 import type { Listing } from "@/types/listing";
 
@@ -32,12 +32,38 @@ interface SearchBody {
 
 const MAX_PAGE = 500; // TMDB hard cap
 
+/**
+ * Browse mode (M8): an empty/short query is no longer an empty screen —
+ * it streams the discovery feed in the advanced page's default order
+ * (popularity) with the same quality floor, so /search?kind=movie is a
+ * "Movies" landing page before anything is typed.
+ */
+const BROWSE_MIN_VOTES = 10;
+
 function emptyResult(page = 1): KindResult {
   return { status: "ok", page, totalPages: 0, total: 0, listings: [] };
 }
 
 function wanted(kind: string, target: Kind): boolean {
   return kind === "all" || kind === target;
+}
+
+async function browseKind(target: Kind, page: number): Promise<KindResult> {
+  try {
+    const result =
+      target === "movie"
+        ? await discoverMovies({ page, minVoteCount: BROWSE_MIN_VOTES })
+        : await discoverTv({ page, minVoteCount: BROWSE_MIN_VOTES });
+    return {
+      status: "ok",
+      page: result.page ?? page,
+      totalPages: Math.min(result.total_pages ?? 0, MAX_PAGE),
+      total: result.total_results ?? 0,
+      listings: toListingList(result.results, target),
+    };
+  } catch {
+    return { ...emptyResult(page), status: "error", error: "tmdb_unavailable" };
+  }
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -57,8 +83,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   };
 
   if (query.length < 2) {
-    body.kinds.movie = wanted(kind, "movie") ? emptyResult(page) : null;
-    body.kinds.tv = wanted(kind, "tv") ? emptyResult(page) : null;
+    await Promise.all(
+      ([
+        wanted(kind, "movie") && ("movie" as Kind),
+        wanted(kind, "tv") && ("tv" as Kind),
+      ].filter(Boolean) as Kind[]).map(async (target) => {
+        body.kinds[target] = await browseKind(target, page);
+      }),
+    );
     return NextResponse.json(body, { headers: { "cache-control": "no-store" } });
   }
 

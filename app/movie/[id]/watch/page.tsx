@@ -50,7 +50,7 @@ async function WatchContent({ params }: { params: Promise<{ id: string }> }) {
   const numericId = Number.parseInt(id, 10);
   if (!Number.isInteger(numericId) || numericId <= 0) notFound();
 
-  const [detail, freeFilm] = await Promise.all([
+  const [detail, free] = await Promise.all([
     getMovieDetail(numericId),
     resolveFreeFilm(numericId),
   ]);
@@ -75,12 +75,14 @@ async function WatchContent({ params }: { params: Promise<{ id: string }> }) {
         {listing.year !== undefined && <span>{listing.year}</span>}
       </p>
 
-      {freeFilm ? (
-        freeFilm.archive ? (
-          <FreeSection free={freeFilm} archive={freeFilm.archive} title={listing.title} />
+      {free.film ? (
+        free.film.archive ? (
+          <FreeSection free={free.film} archive={free.film.archive} title={listing.title} />
         ) : (
-          <UnverifiedSection free={freeFilm} detail={detail} />
+          <UnverifiedSection free={free.film} detail={detail} />
         )
+      ) : free.sourceUnavailable ? (
+        <UnavailableSection detail={detail} />
       ) : (
         <FallbackSection detail={detail} />
       )}
@@ -185,6 +187,28 @@ function UnverifiedSection({
             Check the item page on archive.org
           </a>{" "}
           — the trailer and streaming options stay below.
+        </p>
+      </div>
+      <FallbackSection detail={detail} />
+    </>
+  );
+}
+
+/**
+ * The curation record could not be read (database unreachable, migrations
+ * pending, …): availability is UNKNOWN, which is not the same as "not
+ * free". No free-film claim is made — the trailer and retail options stay
+ * below, exactly like the not-curated path, with the honest explanation.
+ */
+function UnavailableSection({ detail }: { detail: Detail }) {
+  return (
+    <>
+      <div className="mt-6 rounded-2xl border border-amber-700/40 bg-amber-500/10 px-5 py-4 text-[13px] text-content">
+        <p>
+          The curated free-film catalog could not be checked just now — the
+          database is unavailable, so this film may still be playable in
+          full. Try again shortly; the trailer and streaming options stay
+          below in the meantime.
         </p>
       </div>
       <FallbackSection detail={detail} />

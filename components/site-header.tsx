@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSyncExternalStore } from "react";
-import { Bell, Flame, MessageSquare, Search } from "lucide-react";
+import { useSyncExternalStore, useState } from "react";
+import { Bell, Flame, Menu, MessageSquare, Search, X } from "lucide-react";
 
 import { UserMenu } from "@/components/user-menu";
 
@@ -16,6 +16,13 @@ const NAV_ITEMS = [
 
 /** URL-independent header body: identical with or without the resolved pathname. */
 function HeaderBody({ discoverActive = false }: { discoverActive?: boolean }) {
+  /**
+   * Mobile menu (M8): below `lg` the primary nav is hidden entirely, which
+   * left phones with no buttons for any page. A disclosure panel in the
+   * same visual language restores them; it closes on link taps so it
+   * never survives navigation.
+   */
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background">
@@ -87,6 +94,17 @@ function HeaderBody({ discoverActive = false }: { discoverActive?: boolean }) {
 
           <button
             type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            className="grid size-9 place-items-center rounded-md text-content-secondary transition-colors hover:text-content lg:hidden"
+          >
+            {menuOpen ? <X aria-hidden className="size-[18px]" /> : <Menu aria-hidden className="size-[18px]" />}
+          </button>
+
+          <button
+            type="button"
             disabled
             title="Messaging arrives with a later phase"
             aria-label="Messages — not available yet"
@@ -109,6 +127,26 @@ function HeaderBody({ discoverActive = false }: { discoverActive?: boolean }) {
           <UserMenu />
         </div>
       </div>
+
+      {menuOpen && (
+        <div id="mobile-nav" className="border-t border-border lg:hidden">
+          <nav
+            aria-label="Primary"
+            className="mx-auto flex w-full max-w-[1600px] flex-col px-5 py-2.5"
+          >
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                className="flex h-12 items-center rounded-md px-1 text-[13px] font-semibold uppercase tracking-[0.16em] text-content-secondary transition-colors hover:text-content"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

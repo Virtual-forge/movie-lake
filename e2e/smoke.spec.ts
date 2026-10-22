@@ -36,12 +36,57 @@ test("search refines with debounce and kind tabs filter results", async ({
   ).toBeVisible({ timeout: 15_000 });
   await expect(page.locator('a[href^="/movie/"]').first()).toBeVisible();
 
-  await page.getByRole("tab", { name: "Series" }).click();
+  const kindTabs = page.getByRole("list", {
+    name: "Filter results by kind",
+  });
+  await kindTabs.getByRole("link", { name: "Series" }).click();
   await expect(page).toHaveURL(/kind=tv/);
   await expect(
     page.getByRole("heading", { name: "Series", exact: true }),
   ).toBeVisible();
   await expect(page.locator('a[href^="/movie/"]')).toHaveCount(0);
+});
+
+test("search landing browses content without typing (M8)", async ({ page }) => {
+  await page.goto("/search?kind=movie");
+  await expect(
+    page.getByText("Browse films & series", { exact: true }),
+  ).toBeVisible({ timeout: 15_000 });
+  // Real content, not the old forever-pending skeleton void.
+  await expect(page.locator('a[href^="/movie/"]').first()).toBeVisible({ timeout: 15_000 });
+});
+
+test("header Movies/Series links keep the UI in sync with the URL (M8)", async ({
+  page,
+}) => {
+  await page.goto("/search?kind=movie");
+  // Browse content is client-fetched: waiting for it means hydration is
+  // complete, so the header click cannot fall into the dead-click window.
+  await expect(page.locator('a[href^="/movie/"]').first()).toBeVisible({ timeout: 15_000 });
+
+  await page
+    .getByRole("banner")
+    .getByRole("link", { name: "Series", exact: true })
+    .click();
+  await expect(page).toHaveURL(/kind=tv/);
+  // The old bug: the client kept its first kind while the URL said otherwise.
+  await expect(page.locator('a[href^="/movie/"]')).toHaveCount(0);
+  await expect(page.locator('a[href^="/tv/"]').first()).toBeVisible({ timeout: 15_000 });
+});
+
+test("mobile menu exposes page navigation (M8)", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const menuButton = page.getByRole("button", { name: "Open menu" });
+  await expect(menuButton).toBeVisible();
+  await menuButton.click();
+
+  const advanced = page.getByRole("link", { name: "Advanced", exact: true });
+  await expect(advanced).toBeVisible();
+  await advanced.click();
+  await expect(page).toHaveURL(/\/search\/advanced/);
+  // The button persists (it is the toggle); the open panel must not.
+  await expect(page.getByRole("button", { name: "Close menu" })).toHaveCount(0);
 });
 
 test("genre pages are TMDB-backed and link onward", async ({ page }) => {

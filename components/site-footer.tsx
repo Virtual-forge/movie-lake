@@ -8,8 +8,8 @@ const FOOTER_LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-16 border-t border-border">
-      <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 px-5 py-10 md:flex-row md:items-center md:justify-between md:px-10 lg:px-14">
+    <footer className="mt-10 border-t border-border md:mt-16">
+      <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-5 px-5 pb-10 pt-8 md:flex-row md:items-center md:justify-between md:gap-6 md:px-10 md:pb-10 md:pt-10 lg:px-14">
         <div className="text-[10px] font-semibold leading-[1.35] tracking-[0.38em] text-content-secondary">
           <span className="block">MOVIE</span>
           <span className="block">LAKE</span>

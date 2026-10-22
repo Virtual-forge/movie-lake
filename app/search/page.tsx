@@ -32,5 +32,19 @@ export default function SearchPage({
 async function SearchResults({ searchParams }: { searchParams: SearchParams }) {
   const { q, kind } = await searchParams;
   const initialKind: KindTab = kind === "movie" || kind === "tv" ? kind : "all";
-  return <SearchClient initialQuery={q?.trim() ?? ""} initialKind={initialKind} />;
+  const initialQuery = q?.trim() ?? "";
+  /**
+   * `key` remounts the client whenever the URL contract changes: the
+   * header's Movies/Series links re-render this server component with
+   * new props, but React preserves component state across renders —
+   * without the key the client kept the first kind it ever saw while
+   * the URL said otherwise (M8 bug). State now reset-trusts the URL.
+   */
+  return (
+    <SearchClient
+      key={`${initialKind}:${initialQuery}`}
+      initialQuery={initialQuery}
+      initialKind={initialKind}
+    />
+  );
 }

@@ -49,8 +49,14 @@ async function fetchKind(
 export function SearchClient({ initialQuery, initialKind }: SearchClientProps) {
   const [input, setInput] = useState(initialQuery);
   const [query, setQuery] = useState(initialQuery);
-  const [kind, setKind] = useState<KindTab>(initialKind);
+  // The kind is owned by the URL (URL-param tabs): the server re-renders
+  // on tab navigation and `key` in the page remounts this component from
+  // fresh props, so client state can never drift from the URL.
+  const kind: KindTab = initialKind;
   const [pages, setPages] = useState({ movie: 1, tv: 1 });
+
+  /** Short or empty query = browse mode (discovery feed, M8). */
+  const browsing = query.length < MIN_QUERY_LENGTH;
 
   // refine after a short settle, min 2 chars (PROJECT_PLAN M1)
   useEffect(() => {
@@ -70,13 +76,13 @@ export function SearchClient({ initialQuery, initialKind }: SearchClientProps) {
   const movieQuery = useQuery({
     queryKey: ["search", "movie", query, pages.movie],
     queryFn: ({ signal }) => fetchKind("movie", query, pages.movie, signal),
-    enabled: query.length >= MIN_QUERY_LENGTH && kind !== "tv",
+    enabled: kind !== "tv",
   });
 
   const tvQuery = useQuery({
     queryKey: ["search", "tv", query, pages.tv],
     queryFn: ({ signal }) => fetchKind("tv", query, pages.tv, signal),
-    enabled: query.length >= MIN_QUERY_LENGTH && kind !== "movie",
+    enabled: kind !== "movie",
   });
 
   function gotoPage(target: "movie" | "tv", page: number) {
@@ -89,6 +95,21 @@ export function SearchClient({ initialQuery, initialKind }: SearchClientProps) {
     { key: "movie", label: "Films" },
     { key: "tv", label: "Series" },
   ];
+
+  /**
+   * Kind tabs are URL-param links (the genre-page pattern, M8): navigation
+   * re-renders from the server with the new kind, the URL stays
+   * shareable, and the client state can never drift from it — the old
+   * state-button tabs desynced from the URL when the header links
+   * navigated.
+   */
+  function tabHref(key: KindTab): string {
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (key !== "all") params.set("kind", key);
+    const search = params.toString();
+    return search ? `/search?${search}` : "/search";
+  }
 
   const showMovies = kind !== "tv";
   const showSeries = kind !== "movie";
@@ -112,14 +133,14 @@ export function SearchClient({ initialQuery, initialKind }: SearchClientProps) {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <p className="text-[clamp(1.5rem,2.6vw,2.2rem)] font-semibold tracking-tight text-content">
-          {query.length >= MIN_QUERY_LENGTH ? `Results for "${query}"` : "Search"}
+          {browsing ? "Browse films & series" : `Results for "${query}"`}
         </p>
         <p className="text-[13px] text-content-muted" aria-live="polite">
-          {query.length >= MIN_QUERY_LENGTH
-            ? movieQuery.isFetching || tvQuery.isFetching
-              ? "Searching..."
-              : `${totalTitles} title${totalTitles === 1 ? "" : "s"}`
-            : "Type at least 2 characters"}
+          {movieQuery.isFetching || tvQuery.isFetching
+            ? browsing
+              ? "Loading the discovery feed..."
+              : "Searching..."
+            : `${totalTitles} title${totalTitles === 1 ? "" : "s"}`}
         </p>
       </div>
 
@@ -135,41 +156,26 @@ export function SearchClient({ initialQuery, initialKind }: SearchClientProps) {
           spellCheck={false}
           className="h-11 w-full max-w-md rounded-full border border-border bg-surface px-5 text-[15px] text-content placeholder:text-content-muted focus:border-[#48443f] focus:outline-none"
         />
-        <ul className="flex gap-2" role="tablist" aria-label="Filter results by kind">
+        <ul aria-label="Filter results by kind" className="flex gap-2">
           {tabs.map((tab) => (
             <li key={tab.key}>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={kind === tab.key}
-                onClick={() => {
-                  setKind(tab.key);
-                  window.scrollTo({ top: 0 });
-                }}
-                className={`h-9 rounded-full border px-4 text-[13px] transition-colors ${
+              <Link
+                href={tabHref(tab.key)}
+                aria-current={kind === tab.key ? "true" : undefined}
+                className={`inline-flex h-9 items-center rounded-full border px-4 text-[13px] transition-colors ${
                   kind === tab.key
                     ? "border-transparent bg-content text-background"
                     : "border-border bg-surface text-content hover:border-[#48443f]"
                 }`}
               >
                 {tab.label}
-              </button>
+              </Link>
             </li>
           ))}
         </ul>
       </div>
 
-      {query.length < MIN_QUERY_LENGTH ? (
-        <div className="flex flex-col items-start gap-3 rounded-2xl border border-border bg-surface px-6 py-10">
-          <p className="text-content">Search films and series by title, network or actor credits.</p>
-          <Link
-            href="/"
-            className="text-[13px] font-medium text-content-secondary underline-offset-4 transition-colors hover:text-content hover:underline"
-          >
-            Back to Discover
-          </Link>
-        </div>
-      ) : fullyLoaded && listingCount === 0 ? (
+      {browsing ? null : fullyLoaded && listingCount === 0 ? (
         <div className="flex flex-col items-start gap-3 rounded-2xl border border-border bg-surface px-6 py-10">
           <p className="text-content">
             {`Nothing matched "${query}" - try fewer or different words.`}
@@ -190,6 +196,7 @@ export function SearchClient({ initialQuery, initialKind }: SearchClientProps) {
           query={query}
           page={pages.movie}
           state={movieQuery.status}
+          browse={browsing}
           result={kind === "movie" || kind === "all" ? (movieQuery.data?.kinds.movie ?? null) : null}
           isFetching={movieQuery.isFetching}
           onPage={(next) => {
@@ -206,6 +213,7 @@ export function SearchClient({ initialQuery, initialKind }: SearchClientProps) {
           query={query}
           page={pages.tv}
           state={tvQuery.status}
+          browse={browsing}
           result={kind === "tv" || kind === "all" ? (tvQuery.data?.kinds.tv ?? null) : null}
           isFetching={tvQuery.isFetching}
           onPage={(next) => {
@@ -222,6 +230,8 @@ interface KindSectionProps {
   ariaLabel: string;
   heading: string;
   query: string;
+  /** Browse mode (empty/short query): the zero-results copy differs. */
+  browse?: boolean;
   page: number;
   state: "pending" | "error" | "success";
   result: KindResult | null;
@@ -234,6 +244,7 @@ function KindSection({
   ariaLabel,
   heading,
   query,
+  browse = false,
   page,
   state,
   result,
@@ -261,7 +272,9 @@ function KindSection({
         <ErrorCard onRetry={onRetry} />
       ) : listings.length === 0 ? (
         <p className="text-[13px] text-content-muted">
-          {`No films found for "${query}"`}
+          {browse
+            ? "Nothing to browse here yet — the discovery feed came back empty, try again shortly."
+            : `No films found for "${query}"`}
         </p>
       ) : (
         <>

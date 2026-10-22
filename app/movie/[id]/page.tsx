@@ -8,7 +8,6 @@ import {
   DetailArticle,
   DetailSkeleton,
 } from "@/components/detail-article";
-
 interface MoviePageProps {
   params: Promise<{ id: string }>;
 }
@@ -39,8 +38,9 @@ async function MovieDetails({ params }: { params: Promise<{ id: string }> }) {
   if (!Number.isInteger(numericId) || numericId <= 0) notFound();
 
   // Detail data is `use cache`d TMDB; the curated free-film record is a
-  // live DB read so seed edits surface immediately.
-  const [detail, freeFilm] = await Promise.all([
+  // live DB read so seed edits surface immediately, and a DB hiccup
+  // degrades to "no CTA" instead of killing the whole page (M8).
+  const [detail, free] = await Promise.all([
     getMovieDetail(numericId),
     resolveFreeFilm(numericId),
   ]);
@@ -48,7 +48,7 @@ async function MovieDetails({ params }: { params: Promise<{ id: string }> }) {
 
   return (
     <DetailArticle
-      detail={freeFilm ? { ...detail, freeFilm } : detail}
+      detail={free.film ? { ...detail, freeFilm: free.film } : detail}
     />
   );
 }
