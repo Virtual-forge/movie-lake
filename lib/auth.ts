@@ -18,13 +18,20 @@ import { prisma } from "./db";
  * Browser origins allowed to call the auth API — Better Auth rejects
  * cross-origin POSTs otherwise, and the deployment had BETTER_AUTH_URL set
  * to an empty string, so prod registration/sign-in failed with
- * "Invalid origin" (found by the first full auth-on-prod e2e sweep, M11).
+ * "Invalid origin" (found by the first full auth-on-prod e2e sweep, M11.1).
  * The option is ADDITIVE to Better Auth's own baseURL-derived origin
  * (verified in the installed 1.7.12 `getTrustedOrigins`), so localhost dev
- * keeps its default. `VERCEL_URL` is auto-injected per deployment, which
- * covers the production domain and every preview URL at once.
+ * keeps its default. Two runtime notes that shaped this list:
+ * `VERCEL_URL` is the per-DEPLOYMENT url (hash-prefixed), not the
+ * production alias, so it alone cannot cover prod traffic; the production
+ * alias is public (it is already in PROJECT_PLAN.md and every prod link)
+ * and therefore listed explicitly. BETTER_AUTH_URL still wins when the
+ * operator sets it (e.g. a future custom domain).
  */
+const PRODUCTION_ORIGIN = "https://movie-lake-lovat.vercel.app";
+
 const trustedOrigins = [
+  PRODUCTION_ORIGIN,
   process.env.BETTER_AUTH_URL || undefined,
   process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
 ].filter((origin): origin is string => Boolean(origin));
