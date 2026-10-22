@@ -89,6 +89,56 @@ test("mobile menu exposes page navigation (M8)", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Close menu" })).toHaveCount(0);
 });
 
+test("mobile drawer closes with a drag gesture (M10)", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open menu" }).click();
+  const drawer = page.locator("#mobile-nav");
+  await expect(drawer).toBeVisible();
+  // Let the open slide settle so the drag coordinates are final-position.
+  await page.waitForTimeout(350);
+
+  const box = await drawer.boundingBox();
+  if (!box) throw new Error("drawer did not render");
+  // The panel is viewport-fixed and hugs the right edge.
+  const viewport = await page.viewportSize();
+  expect(box.x + box.width).toBeCloseTo(viewport?.width ?? 0, 0);
+  const startX = box.x + 120;
+  const y = box.y + 40;
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  // Real-timed rightward drag: follow-the-finger then release closes it.
+  for (let i = 1; i <= 5; i += 1) {
+    await page.mouse.move(startX + i * 45, y);
+  }
+  await page.mouse.up();
+
+  // aria-expanded flips once the drag is accepted as a close.
+  await expect(page.getByRole("button", { name: "Close menu" })).toHaveCount(0);
+  await expect(drawer).toHaveCSS("visibility", "hidden", { timeout: 1500 });
+});
+
+test("desktop nav indicator glides between active items (M10)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const indicator = page.locator('[data-testid="nav-indicator"]');
+  await expect(indicator).toBeVisible();
+  const start = await indicator.boundingBox();
+  if (!start) throw new Error("indicator did not render");
+
+  await page
+    .getByRole("banner")
+    .getByRole("link", { name: "Series", exact: true })
+    .click();
+  await expect(page).toHaveURL(/kind=tv/);
+  await expect(indicator).toBeVisible();
+  const moved = await indicator.boundingBox();
+  if (!moved) throw new Error("indicator vanished after navigation");
+  // The bar physically relocates from Discover to Series.
+  expect(Math.abs((moved.x ?? 0) - (start.x ?? 0))).toBeGreaterThan(80);
+});
+
 test("genre pages are TMDB-backed and link onward", async ({ page }) => {
   await page.goto("/genres/comedy");
   await expect(page.locator("h1")).toHaveText("Comedy");

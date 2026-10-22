@@ -39,6 +39,12 @@
   html {
     color-scheme: dark;
     scrollbar-color: #292725 transparent;
+    /* Android/WebView rubber-band shows the body background as a black
+       region past the page end (M10 report). `contain` disables the edge
+       glow and pull-to-refresh — neither is designed for this app. The
+       reported void could not be reproduced in emulation (footer bottom
+       == scrollHeight on every page); this removes the reveal mechanism. */
+    overscroll-behavior-y: contain;
   }
 
   body {
@@ -84,4 +90,38 @@
   .card-in {
     animation: card-in 420ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
   }
+}
+
+/* Mobile nav drawer (M10): one always-mounted panel whose closed state is
+   `visibility: hidden` + off-screen transform. Transitions live in CSS so
+   the drag gesture only writes inline transform when overriding — release
+   clears the inline styles and these rules take the panel the rest of the
+   way (snap back open, or out). The visibility delay keeps the panel
+   painted through the whole slide-out. */
+.drawer-panel {
+  transform: translateX(100%);
+  visibility: hidden;
+  transition:
+    transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 280ms;
+}
+
+.drawer-panel[data-open="true"] {
+  transform: translateX(0);
+  visibility: visible;
+  transition:
+    transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0s;
+}
+
+.drawer-backdrop {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 240ms ease-out;
+}
+
+.drawer-backdrop[data-open="true"] {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 240ms ease-out;
 }
