@@ -1,0 +1,387 @@
+{
+  "metadata": {
+    "identifier": "ATripToTheMoonGeorgeMelies",
+    "mediatype": "movies",
+    "collection": [
+      "opensource_movies",
+      "community"
+    ],
+    "date": "1902",
+    "description": "Silent film by George Méliès",
+    "scanner": "Internet Archive HTML5 Uploader 1.6.3",
+    "subject": [
+      "a tip to the moon",
+      "silent film",
+      "George Méliès"
+    ],
+    "title": "A Trip To The Moon George Méliès",
+    "publicdate": "2017-04-10 18:23:23",
+    "uploader": "justforthehw@gmail.com",
+    "addeddate": "2017-04-10 18:23:23",
+    "curation": "[curator]validator@archive.org[/curator][date]20170410182353[/date][comment]checked for malware[/comment]",
+    "backup_location": "ia906401_35"
+  },
+  "files": [
+    {
+      "name": "A Trip to the Moon-George Méliès.mp4",
+      "source": "original",
+      "mtime": "1491848603",
+      "size": "218115276",
+      "md5": "3d897b30b3c9d7f9c7ef82663dd7b78b",
+      "crc32": "9c7ac5f4",
+      "sha1": "77106339814fee3585e3e63982ae02479e0b97fd",
+      "format": "MPEG4",
+      "length": "771.81",
+      "height": "720",
+      "width": "1280"
+    },
+    {
+      "name": "A Trip to the Moon-George Méliès.ogv",
+      "source": "derivative",
+      "format": "Ogg Video",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491849970",
+      "size": "60618423",
+      "md5": "caa5a4cc52bee5808d4544c14e8687e3",
+      "crc32": "683e381c",
+      "sha1": "c225ad0d7686e0f97e4352387260a0694afdaca7",
+      "length": "771.81",
+      "height": "300",
+      "width": "533"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000001.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848649",
+      "size": "5993",
+      "md5": "90daa4d07a79e87d12c4dd625d4425fa",
+      "crc32": "09166386",
+      "sha1": "d7bef407d7b4b4b2bb36530a265424464ffa897b"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000057.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848659",
+      "size": "6082",
+      "md5": "eed5ec3bfb4d0325f6282c183e9afc40",
+      "crc32": "b21b7051",
+      "sha1": "53902d69dc33e4aeac7be4e14ca8979e5e209a99"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000087.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848669",
+      "size": "6238",
+      "md5": "ab9d3ef217c8b29553fe694bfe00c5d7",
+      "crc32": "c89baf4d",
+      "sha1": "9913ebe3dcf381805a97581b2d5cb1e584517475"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000117.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848679",
+      "size": "6581",
+      "md5": "0261115c869814c3f4604c030688bd12",
+      "crc32": "46736b50",
+      "sha1": "4304f86f5339c1f80ef41d7e3b50048579585507"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000147.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848689",
+      "size": "6680",
+      "md5": "d9c395d1492b4ffc511f3c795d4820ba",
+      "crc32": "a7e98a84",
+      "sha1": "424679291530876f5f4dd79a1b1f2a6b071c578f"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000177.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848699",
+      "size": "6914",
+      "md5": "f97a98b5a67f6844f4224c46ebe06d5e",
+      "crc32": "90dd0b0f",
+      "sha1": "586361ad1f4a3ccdb8438b3d2dfa3f585b2d76b7"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000207.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848710",
+      "size": "6464",
+      "md5": "19213ea3a3ffa5df22b1b5f02dd51ed4",
+      "crc32": "add7371b",
+      "sha1": "290ec1246a4168240e3735a36c21bd0d57b943d4"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000237.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848721",
+      "size": "5092",
+      "md5": "ba8a45471ef6dd8bb7bf9146cce97f68",
+      "crc32": "f5c902ef",
+      "sha1": "3b2ed5cb0855ad82693c0ca29841e1ebd8c54eaf"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000267.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848731",
+      "size": "5933",
+      "md5": "c6edaf9c642d7dbdbb1270faee94cdcf",
+      "crc32": "a1d94f98",
+      "sha1": "f38c6949c12a234c66aee4fae14eb853c1aae240"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000297.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848741",
+      "size": "5727",
+      "md5": "3c25d64c6c97a924ea798a31332fdf27",
+      "crc32": "8673afb3",
+      "sha1": "74a3fca73458ec20bd0eedee7d2842417bbb979c"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000327.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848751",
+      "size": "5790",
+      "md5": "8969d19b6687e043c04c6a3dab87696c",
+      "crc32": "351ae6e8",
+      "sha1": "8c0d57e02f847ca7f20aef695c7e5be8a73285e5"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000357.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848761",
+      "size": "6138",
+      "md5": "71535d1a7e6adeff4798855109f23192",
+      "crc32": "5895a70c",
+      "sha1": "6d7c3481039520db8af784f57769cebdad05039b"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000387.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848771",
+      "size": "6232",
+      "md5": "ed4677f641680c3167f03a958f59b979",
+      "crc32": "a39d86ae",
+      "sha1": "a2df7b0f0e7f8ed011d33b4d05eb6dbc5e06c5bb"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000417.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848781",
+      "size": "5983",
+      "md5": "3aed90dd511d247bd359c81c0f64dbca",
+      "crc32": "4bbce437",
+      "sha1": "37a0d07920adc5982788b44e56dcc1984276f9db"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000447.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848792",
+      "size": "5439",
+      "md5": "0e352deede25684013978760623fe688",
+      "crc32": "ca06881a",
+      "sha1": "800393389cb33032180fe28d998293eed11e87c4"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000477.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848802",
+      "size": "5904",
+      "md5": "09b60ed8a8c16a7f6f7dbb571bf10f65",
+      "crc32": "cea97288",
+      "sha1": "c8629272368d693e9100b89edd11307ccd9ec110"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000507.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848812",
+      "size": "6161",
+      "md5": "5c661b164228b8e159df4ee9d1ba4e47",
+      "crc32": "ab8d7ae9",
+      "sha1": "0e427d72d03c81326613f680e5eabf525d5b19d2"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000537.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848824",
+      "size": "6818",
+      "md5": "a0f8acba9077cb7acc403024c380ae9c",
+      "crc32": "08bb33cf",
+      "sha1": "f86bc3bf555a18305e03736ae71b52362a9dd491"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000567.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848834",
+      "size": "6150",
+      "md5": "cf9612bc2e3e4608a85f80dae833eed3",
+      "crc32": "55b47d35",
+      "sha1": "a20550c619471fea3267daff2e85553fc22589f9"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000597.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848845",
+      "size": "6492",
+      "md5": "8c66338aa32f7e659fc9205153ea0905",
+      "crc32": "390eb6f0",
+      "sha1": "188f8a6a384b60400df838f981a2cad33c5c94c4"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000627.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848856",
+      "size": "5619",
+      "md5": "c6ac1eacc4dc7c6dc58fd83fac4858f8",
+      "crc32": "93a5159e",
+      "sha1": "aadf4dede2da23ed9dbd2c5911061c32f11e0d57"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000657.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848867",
+      "size": "5414",
+      "md5": "68c6d8981461a58eb71ffbf9990924fc",
+      "crc32": "97210a42",
+      "sha1": "c43287eac0a3f88662543f204b987f6c4ecc4f54"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000687.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848877",
+      "size": "4966",
+      "md5": "b879314cdf27adf01226cd19af75dd19",
+      "crc32": "7ae3d8a7",
+      "sha1": "6def26ffd66fb651991758c91d14ce2460f68f67"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000717.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848888",
+      "size": "6424",
+      "md5": "982af8c5e8500692672c4e21c1bb41d4",
+      "crc32": "197ce38e",
+      "sha1": "d2c748d6ed6b5fc512865f57de08dba7f685a4a8"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies.thumbs/A Trip to the Moon-George Méliès_000747.jpg",
+      "source": "derivative",
+      "format": "Thumbnail",
+      "original": "A Trip to the Moon-George Méliès.mp4",
+      "mtime": "1491848899",
+      "size": "5387",
+      "md5": "bb73c8e3e7625f9092bf01bbc469cdb7",
+      "crc32": "18921eb0",
+      "sha1": "995e1316b9b472ee90c2d560a65d207ab3874445"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies_archive.torrent",
+      "source": "metadata",
+      "btih": "a6c2e9077e4a49a216b8427dcfc95768beb462b1",
+      "mtime": "1707194769",
+      "size": "12531",
+      "md5": "c46d671cfb71d4b75635b86c5600ce34",
+      "crc32": "ac2a483c",
+      "sha1": "5543d80830658ee2521a46d0c4cc2a115525fdd9",
+      "format": "Archive BitTorrent"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies_files.xml",
+      "source": "original",
+      "format": "Metadata",
+      "md5": "b928507368e33c96cb71b178b74dbbd5",
+      "summation": "md5"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies_meta.sqlite",
+      "source": "original",
+      "mtime": "1491848619",
+      "size": "9216",
+      "md5": "709aa689f78998bddb497d44b22c1baf",
+      "crc32": "3deb4675",
+      "sha1": "60f2b289c7eb0e83bd1bebd64c88d96b962fdfea",
+      "format": "Metadata"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies_meta.xml",
+      "source": "original",
+      "mtime": "1613214044",
+      "size": "847",
+      "format": "Metadata",
+      "md5": "60b596b9620c528b77e878e7fa1e5b05",
+      "crc32": "3deb3572",
+      "sha1": "6fdf8771bfec9da062de0ccbc456d9c477ad487c"
+    },
+    {
+      "name": "ATripToTheMoonGeorgeMelies_reviews.xml",
+      "source": "original",
+      "mtime": "1707194766",
+      "size": "1966",
+      "format": "Metadata",
+      "md5": "f94a00613a554485ed996bfb6fb4afe8",
+      "crc32": "f9df9e24",
+      "sha1": "295ec5d4a35fec9ee67e8e18b1d97dda72e40118"
+    },
+    {
+      "name": "__ia_thumb.jpg",
+      "source": "original",
+      "mtime": "1707194767",
+      "size": "7052",
+      "md5": "f751502c4651c589ee65cfd0ff339224",
+      "crc32": "589be002",
+      "sha1": "088f214d1e3ff6ac7c33a21b2c5f0d2891c73296",
+      "format": "Item Tile",
+      "rotation": "0"
+    }
+  ]
+}

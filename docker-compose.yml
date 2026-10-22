@@ -1,0 +1,26 @@
+# Local PostgreSQL for Movie Lake (M2: auth + favorites).
+# Start:  docker compose up -d
+# Reset:  docker compose down -v
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: movie-lake-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: movie_lake
+    ports:
+      # 5432 is occupied by a native Windows PostgreSQL 16 service on this
+      # machine; publish the container on 5433 instead (see .env DATABASE_URL).
+      - "5433:5432"
+    volumes:
+      - movie-lake-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d movie_lake"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  movie-lake-pgdata:

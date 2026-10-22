@@ -1,0 +1,59 @@
+{
+    "id":  693134,
+    "title":  "Dune: Part Two",
+    "overview":  "Follow the mythic journey of Paul Atreides as he unites with Chani and the Fremen while on a path of revenge against the conspirators who destroyed his family. Facing a choice between the love of his life and the fate of the known universe, Paul endeavors to prevent a terrible future only he can foresee.",
+    "poster_path":  "/6izwz7rsy95ARzTR3poZ8H6c5pp.jpg",
+    "backdrop_path":  "/eZ239CUp1d6OryZEBPnO2n87gMG.jpg",
+    "release_date":  "2024-02-27",
+    "vote_average":  8.142,
+    "vote_count":  8790,
+    "runtime":  167,
+    "genres":  [
+                   {
+                       "id":  878,
+                       "name":  "Science Fiction"
+                   },
+                   {
+                       "id":  12,
+                       "name":  "Adventure"
+                   }
+               ],
+    "production_companies":  [
+                                 {
+                                     "id":  923,
+                                     "name":  "Legendary Pictures"
+                                 }
+                             ],
+    "release_dates":  {
+                          "results":  [
+                                          {
+                                              "iso_3166_1":  "US",
+                                              "release_dates":  [
+                                                                    {
+                                                                        "certification":  "PG-13",
+                                                                        "note":  ""
+                                                                    },
+                                                                    {
+                                                                        "certification":  "PG-13",
+                                                                        "note":  ""
+                                                                    },
+                                                                    {
+                                                                        "certification":  "PG-13",
+                                                                        "note":  "Max"
+                                                                    },
+                                                                    {
+                                                                        "certification":  "PG-13",
+                                                                        "note":  "4K Ultra HD / Blu-ray / DVD"
+                                                                    },
+                                                                    {
+                                                                        "certification":  "PG-13",
+                                                                        "note":  "HBO"
+                                                                    }
+                                                                ]
+                                          }
+                                      ]
+                      },
+    "external_ids":  {
+                         "imdb_id":  "tt15239678"
+                     }
+}

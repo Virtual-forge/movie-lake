@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Movie Lake
 
-## Getting Started
+A cinematic discovery index for movies and series. Server-rendered Next.js 16
+front end over the TMDB engine, with server-backed favorites, a curated
+public-domain watch page, and honest labels everywhere: real data only, no
+fabricated ratings, and attribution where data comes from.
 
-First, run the development server:
+**This is a design-study demo, not a streaming service.** Full films appear
+only for curated, license-verified titles (public domain / CC) covered by the
+Internet Archive; everything else gets trailers and retail options.
+
+## Stack
+
+- Next.js 16.4.2 (Turbopack, `cacheComponents` + partial prefetching), React 19
+- Tailwind v4, TanStack Query v5, Zod v4
+- Better Auth 1.7 (email/password; Google activates when credentials exist)
+- Prisma 7 (engineless driver adapter) + Postgres (Docker locally, Neon in prod)
+- Vitest units + Playwright e2e against a running dev server
+
+## Local setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local        # fill in TMDB_API_READ_TOKEN + BETTER_AUTH_SECRET
+cp .env.example .env              # DATABASE_URL + BETTER_AUTH_URL (localhost:3000)
+docker compose up -d              # Postgres on :5433
+pnpm exec prisma migrate deploy   # or: prisma migrate dev
+pnpm exec prisma db seed          # curated FreeFilm rows (license-verified)
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Gates: `pnpm exec tsc --noEmit` · `pnpm lint` · `pnpm test` · `pnpm build` ·
+`pnpm exec playwright test` (expects the dev server on :3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploying (Vercel + Neon)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Import this repo in Vercel ("Add New Project"), framework auto-detected.
+2. Environment variables (all environments):
+   - `TMDB_API_READ_TOKEN` — TMDB "API Read Access Token" (JWT)
+   - `DATABASE_URL` — Neon **pooled** connection string
+   - `BETTER_AUTH_SECRET` — generate fresh: `openssl rand -base64 32`
+   - `BETTER_AUTH_URL` — your production URL (previews: `https://${VERCEL_URL}`)
+3. First boot with empty data: run `pnpm exec prisma migrate deploy` (and,
+   if you want the curated free films, `pnpm exec prisma db seed`) against
+   the Neon URL from a machine with the repo checked out.
+4. Deploy → watch page, favorites, search all run on real data.
 
-## Learn More
+## Content policy
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Real data only; nothing invented; sources labeled (TMDB, JustWatch,
+  Internet Archive).
+- Free full films are seeded entries with a recorded license basis and
+  verification date (`prisma/seed.ts`); public-domain claims are US-only and
+  auditable.
+- No unlicensed stream embeds, ever.

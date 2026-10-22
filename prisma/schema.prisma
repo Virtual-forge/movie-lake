@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  favorites     Favorite[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+/**
+ * Favorite snapshot at save time (docs/PROJECT_PLAN.md → Data Models).
+ * TMDB terms limit cached data to six months — `updatedAt` tracks snapshot
+ * freshness so stale rows can be refreshed lazily on the profile page.
+ * Ratings are never stored here; they are fetched live on detail pages.
+ *
+ * BOOK values in the enums stay defined per plan even though books are
+ * deferred post-MVP (Oct 2026).
+ */
+enum MediaType {
+  MOVIE
+  TV
+  BOOK
+}
+
+enum Source {
+  TMDB
+  GOOGLE_BOOKS
+  OPEN_LIBRARY
+}
+
+model Favorite {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source     Source
+  type       MediaType
+  externalId String // ID within the source (TMDB ID later; Google Books volume ID when books ship)
+  title      String
+  posterPath String? // path only; the full URL is built at render time
+  genres     String[] // canonical genre slugs
+  year       Int?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt // snapshot freshness; refresh lazily
+
+  @@unique([userId, source, type, externalId])
+  @@index([userId, createdAt])
+  @@map("favorite")
+}
+
+/**
+ * Curated, verified free films (docs/PROJECT_PLAN.md → Data Models).
+ * Rows are added only with a checked license record: the watch page shows
+ * `license` and `licenseUrl` next to the Internet Archive embed, and
+ * `notes` carries the verification basis + date (public-domain status
+ * varies by country, so every claim must stay auditable).
+ */
+model FreeFilm {
+  tmdbId            Int      @id
+  archiveIdentifier String   @unique // Internet Archive item ID for the embed URL
+  license           String // e.g. "Public domain (US)", "CC BY 3.0"
+  licenseUrl        String?
+  notes             String?
+  createdAt         DateTime @default(now())
+
+  @@map("free_film")
+}

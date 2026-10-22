@@ -1,0 +1,40 @@
+{
+    "id":  250307,
+    "name":  "The Pitt",
+    "overview":  "The staff of Pittsburgh\u0027s Trauma Medical Center work around the clock to save lives in an overcrowded and underfunded emergency department.",
+    "poster_path":  "/kvFSpESyBZMjaeOJDx7RS3P1jey.jpg",
+    "backdrop_path":  "/z3BkMbCy5ajZPMyKEUwsPHuz2cV.jpg",
+    "first_air_date":  "2025-01-09",
+    "vote_average":  8.737,
+    "vote_count":  1018,
+    "episode_run_time":  [
+
+                         ],
+    "genres":  [
+                   {
+                       "id":  18,
+                       "name":  "Drama"
+                   }
+               ],
+    "networks":  [
+                     {
+                         "id":  6783,
+                         "name":  "Max"
+                     },
+                     {
+                         "id":  8304,
+                         "name":  "HBO Max"
+                     }
+                 ],
+    "content_ratings":  {
+                            "results":  [
+                                            {
+                                                "iso_3166_1":  "US",
+                                                "rating":  "TV-MA"
+                                            }
+                                        ]
+                        },
+    "external_ids":  {
+                         "imdb_id":  "tt31938062"
+                     }
+}
