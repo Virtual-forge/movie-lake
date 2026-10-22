@@ -40,6 +40,23 @@ const MAX_PAGE = 500; // TMDB hard cap
  */
 const BROWSE_MIN_VOTES = 10;
 
+/**
+ * Free streaming (M11): browse supports `monetization=free`, resolved at
+ * the client boundary to JustWatch's free-or-ad-supported offer set
+ * (verified live: docs list free|ads among watch_monetization_types;
+ * pipe = OR). The region must ride along — TMDB errors without it. Text
+ * search cannot monetization-filter (search endpoints ignore watch
+ * params), so only the browse feed honors it and the UI says so.
+ */
+const FREE_MONETIZATION_TYPE_FILTER = "free|ads";
+const FREE_WATCH_REGION = "US";
+const SUPPORTED_MONETIZATION = new Set(["free"]);
+
+interface BrowseFilter {
+  watchMonetization?: string;
+  watchRegion?: string;
+}
+
 function emptyResult(page = 1): KindResult {
   return { status: "ok", page, totalPages: 0, total: 0, listings: [] };
 }
@@ -48,12 +65,17 @@ function wanted(kind: string, target: Kind): boolean {
   return kind === "all" || kind === target;
 }
 
-async function browseKind(target: Kind, page: number): Promise<KindResult> {
+async function browseKind(
+  target: Kind,
+  page: number,
+  filter: BrowseFilter = {},
+): Promise<KindResult> {
   try {
+    const options = { page, minVoteCount: BROWSE_MIN_VOTES, ...filter };
     const result =
       target === "movie"
-        ? await discoverMovies({ page, minVoteCount: BROWSE_MIN_VOTES })
-        : await discoverTv({ page, minVoteCount: BROWSE_MIN_VOTES });
+        ? await discoverMovies(options)
+        : await discoverTv(options);
     return {
       status: "ok",
       page: result.page ?? page,
@@ -72,10 +94,23 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const kind = searchParams.get("kind") ?? "all";
   const rawPage = Number.parseInt(searchParams.get("page") ?? "1", 10);
   const page = Number.isFinite(rawPage) ? Math.min(Math.max(rawPage, 1), MAX_PAGE) : 1;
+  const rawMonetization = searchParams.get("monetization");
 
   if (!["all", "movie", "tv"].includes(kind)) {
     return NextResponse.json({ error: "invalid kind" }, { status: 400 });
   }
+  if (rawMonetization !== null && !SUPPORTED_MONETIZATION.has(rawMonetization)) {
+    return NextResponse.json({ error: "invalid monetization" }, { status: 400 });
+  }
+  // The client resolves the URL kind=free tab into per-kind requests, so the
+  // route only ever sees kind=movie|tv plus this browse-only filter.
+  const browseFilter: BrowseFilter =
+    rawMonetization === "free"
+      ? {
+          watchMonetization: FREE_MONETIZATION_TYPE_FILTER,
+          watchRegion: FREE_WATCH_REGION,
+        }
+      : {};
 
   const body: SearchBody = {
     query,
@@ -88,7 +123,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         wanted(kind, "movie") && ("movie" as Kind),
         wanted(kind, "tv") && ("tv" as Kind),
       ].filter(Boolean) as Kind[]).map(async (target) => {
-        body.kinds[target] = await browseKind(target, page);
+        body.kinds[target] = await browseKind(target, page, browseFilter);
       }),
     );
     return NextResponse.json(body, { headers: { "cache-control": "no-store" } });

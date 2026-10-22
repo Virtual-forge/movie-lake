@@ -9,7 +9,7 @@ test("homepage renders live rails and navigates to a TMDB detail page", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Popular series" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Popular films" })).toBeVisible();
 
   const firstFilmCard = page.locator('a[href^="/movie/"].group').first();
   await expect(firstFilmCard).toBeVisible();
@@ -238,4 +238,71 @@ test("poster rails drag with the mouse and swallow the follow-up click (M9)", as
   // suppression state first).
   await card.evaluate((el) => (el as HTMLAnchorElement).click());
   await expect(page).toHaveURL(/\/$/);
+});
+
+test("hero slideshow drags between titles and swallows the follow-up click (M11)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const hero = page.getByRole("region", { name: "Featured titles" });
+  await expect(hero).toBeVisible({ timeout: 15_000 });
+
+  // Park the cursor on the slider: the hover pause takes the 6.5s autoplay
+  // out of the race, so the drag tests a determinate slide.
+  const track = page.locator('[data-testid="hero-track"]');
+  const box = await track.boundingBox();
+  if (!box) throw new Error("hero track did not render");
+  const centerX = box.x + box.width / 2;
+  const centerY = box.y + box.height / 2;
+  await page.mouse.move(centerX, centerY);
+  await page.waitForTimeout(50);
+
+  // Real-timed CDP drag leftward: commit exactly one slide forward.
+  await page.mouse.down();
+  for (let i = 1; i <= 8; i += 1) {
+    await page.mouse.move(centerX - i * 30, centerY);
+  }
+  await page.mouse.up();
+
+  const transform = await track.evaluate((el) => el.style.transform);
+  expect(transform).toContain("-100%");
+
+  // The click following a real drag must not open the slide's link —
+  // dispatched on the slide we just committed to (inert guards off-slides).
+  const committedSlide = hero
+    .locator('[data-testid="hero-track"] > div')
+    .nth(1);
+  const play = committedSlide.locator('a[aria-label^="View details"]');
+  await play.evaluate((el) => (el as HTMLAnchorElement).click());
+  await expect(page).toHaveURL(/\/$/);
+});
+
+test("Free tab browses the free/ads feed and documents its limits (M11)", async ({
+  page,
+}) => {
+  await page.goto("/search?kind=free");
+  const tabs = page.getByRole("list", { name: "Filter results by kind" });
+  await expect(tabs.getByRole("link", { name: "Free (US)" })).toBeVisible();
+
+  await expect(
+    page.getByText(/Streaming free right now in the US/),
+  ).toBeVisible({ timeout: 15_000 });
+  // The monetized feeds fill both sections with real, free-to-stream rows.
+  await expect(page.locator('a[href^="/movie/"]').first()).toBeVisible({
+    timeout: 15_000,
+  });
+  await expect(page.locator('a[href^="/tv/"]').first()).toBeVisible({
+    timeout: 15_000,
+  });
+
+  // Typing cannot free-filter text search — the UI says so instead of
+  // presenting unfiltered results under the free tab silently.
+  const input = page.getByLabel("Search films and series");
+  await input.fill("matrix");
+  await expect(
+    page.getByText(/Search results are not free-filtered/),
+  ).toBeVisible({ timeout: 15_000 });
+  await expect(
+    page.getByText('Results for "matrix"', { exact: true }),
+  ).toBeVisible({ timeout: 15_000 });
 });

@@ -3,7 +3,6 @@ import {
   discoverMovies,
   discoverTv,
   movieDetails,
-  trendingAll,
   trendingMovies,
   trendingTv,
   tvDetails,
@@ -62,17 +61,17 @@ async function loadEnriched(result: TmdbMediaResult): Promise<Listing | null> {
   }
 }
 
-/** Featured slider: top trending items with wide art, enriched to full detail. */
+/** Featured slider: the day's trending films with wide art, enriched (M11:
+ * the slideshow wants films, not the mixed all-trending feed). */
 export async function getHeroSlides(): Promise<Listing[]> {
   "use cache";
   cacheLife("hours");
   cacheTag("tmdb-trending");
 
-  const day = await trendingAll("day");
-  const candidates = (day.results ?? [])
+  const movies = await trendingMovies("day");
+  const candidates = (movies.results ?? [])
     .filter(
-      (r): r is TmdbMediaResult & { media_type: "movie" | "tv" } =>
-        (r.media_type === "movie" || r.media_type === "tv") &&
+      (r) =>
         Boolean((r.title ?? r.name) && r.backdrop_path && r.poster_path),
     )
     .slice(0, 6);
@@ -84,22 +83,27 @@ export async function getHeroSlides(): Promise<Listing[]> {
   return slides.filter((slide) => slide.backdrop).slice(0, 4);
 }
 
-/** "Now watching": trending series of the day, enriched with runtime/network. */
+/**
+ * "Popular films" side list (M11: this block led with trending series;
+ * the homepage now films first). Daily trending films minus the titles
+ * the hero already shows, so the two blocks never repeat each other.
+ */
 export async function getNowWatching(): Promise<Listing[]> {
   "use cache";
   cacheLife("hours");
   cacheTag("tmdb-trending");
 
-  const tv = await trendingTv("day");
-  const candidates = (tv.results ?? [])
-    .filter((r) => Boolean((r.name ?? r.title) && r.poster_path))
+  const [movies, hero] = await Promise.all([trendingMovies("day"), getHeroSlides()]);
+  const heroIds = new Set(hero.map((slide) => slide.externalId));
+  const candidates = (movies.results ?? [])
+    .filter((r) => Boolean(r.title) && r.poster_path && !heroIds.has(r.id))
     .slice(0, 3);
 
   const enriched = (await Promise.allSettled(candidates.map(loadEnriched)))
     .flatMap((settled) => (settled.status === "fulfilled" ? [settled.value] : []))
     .filter((listing): listing is Listing => listing !== null);
 
-  return enriched.filter((listing) => listing.kind === "series").slice(0, 3);
+  return enriched.filter((listing) => listing.kind === "film").slice(0, 3);
 }
 
 /** "Trending" rail: this week's most-watched films and series, interleaved. */

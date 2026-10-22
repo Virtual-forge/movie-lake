@@ -7,9 +7,9 @@ import { MetaRow } from "@/components/meta-row";
 
 export function NowWatching({ items }: { items: Listing[] }) {
   return (
-    <aside aria-label="Popular series" className="flex flex-col gap-3.5">
+    <aside aria-label="Popular films" className="flex flex-col gap-3.5">
       <h2 className="text-lg font-semibold tracking-tight text-content">
-        Popular series
+        Popular films
       </h2>
       {items.map((item) => {
         const runtime = formatRuntime(item.runtimeMin);

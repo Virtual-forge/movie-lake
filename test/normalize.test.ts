@@ -209,6 +209,35 @@ describe("watchProvidersView", () => {
     expect(heavy?.slices.flatrate?.at(-1)?.name).toBe("P8");
   });
 
+  it("leads with free and free-with-ads slices when the US set has them (M11)", () => {
+    const view = watchProvidersView({
+      results: {
+        US: {
+          link: "https://www.themoviedb.org/movie/693134/watch",
+          flatrate: [{ provider_id: 101, provider_name: "Paid Service", display_priority: 1 }],
+          free: [{ provider_id: 73, provider_name: "Tubi", display_priority: 1 }],
+          ads: [{ provider_id: 305, provider_name: "Plex", display_priority: 2 }],
+        },
+      },
+    } as never);
+    const sliceOrder = Object.keys(view?.slices ?? {});
+    expect(sliceOrder.slice(0, 2).join(",")).toBe("free,ads");
+    expect(view?.slices.free?.[0]?.name).toBe("Tubi");
+    expect(view?.slices.ads?.[0]?.name).toBe("Plex");
+    expect(view?.hasAny).toBe(true);
+  });
+
+  it("treats a free-only offer set as a valid panel (hasAny)", () => {
+    const view = watchProvidersView({
+      results: {
+        US: { free: [{ provider_id: 73, provider_name: "Tubi", display_priority: 1 }] },
+      },
+    } as never);
+    expect(view?.hasAny).toBe(true);
+    expect(view?.slices.flatrate).toBeUndefined();
+    expect(view?.slices.free?.length).toBe(1);
+  });
+
   it("returns null without a US entry", () => {
     expect(
       watchProvidersView({ results: { GB: { flatrate: [] } } } as never),

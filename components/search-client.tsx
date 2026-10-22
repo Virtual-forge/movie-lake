@@ -10,7 +10,7 @@ import type { Listing } from "@/types/listing";
 const DEBOUNCE_MS = 300;
 const MIN_QUERY_LENGTH = 2;
 
-export type KindTab = "all" | "movie" | "tv";
+export type KindTab = "all" | "movie" | "tv" | "free";
 
 interface KindResult {
   status: "ok" | "error";
@@ -38,9 +38,11 @@ async function fetchKind(
   target: "movie" | "tv",
   query: string,
   page: number,
+  free = false,
   signal?: AbortSignal,
 ): Promise<SearchResponse> {
   const params = new URLSearchParams({ q: query, kind: target, page: String(page) });
+  if (free) params.set("monetization", "free");
   const response = await fetch(`/api/search?${params}`, { signal });
   if (!response.ok) throw new Error(`Search failed (${response.status})`);
   return (await response.json()) as SearchResponse;
@@ -58,6 +60,14 @@ export function SearchClient({ initialQuery, initialKind }: SearchClientProps) {
   /** Short or empty query = browse mode (discovery feed, M8). */
   const browsing = query.length < MIN_QUERY_LENGTH;
 
+  /**
+   * Free tab (M11): the JustWatch free/ads feed is a browse-only surface —
+   * TMDB's text search cannot filter by monetization, so while typing we
+   * search everything and say so instead of pretending the filter held.
+   */
+  const freeTab = kind === "free";
+  const freeActive = freeTab && browsing;
+
   // refine after a short settle, min 2 chars (PROJECT_PLAN M1)
   useEffect(() => {
     const timer = window.setTimeout(() => setQuery(input.trim()), DEBOUNCE_MS);
@@ -74,14 +84,14 @@ export function SearchClient({ initialQuery, initialKind }: SearchClientProps) {
   }, [query, kind]);
 
   const movieQuery = useQuery({
-    queryKey: ["search", "movie", query, pages.movie],
-    queryFn: ({ signal }) => fetchKind("movie", query, pages.movie, signal),
+    queryKey: ["search", "movie", query, pages.movie, freeActive],
+    queryFn: ({ signal }) => fetchKind("movie", query, pages.movie, freeActive, signal),
     enabled: kind !== "tv",
   });
 
   const tvQuery = useQuery({
-    queryKey: ["search", "tv", query, pages.tv],
-    queryFn: ({ signal }) => fetchKind("tv", query, pages.tv, signal),
+    queryKey: ["search", "tv", query, pages.tv, freeActive],
+    queryFn: ({ signal }) => fetchKind("tv", query, pages.tv, freeActive, signal),
     enabled: kind !== "movie",
   });
 
@@ -94,6 +104,7 @@ export function SearchClient({ initialQuery, initialKind }: SearchClientProps) {
     { key: "all", label: "All" },
     { key: "movie", label: "Films" },
     { key: "tv", label: "Series" },
+    { key: "free", label: "Free (US)" },
   ];
 
   /**
@@ -133,16 +144,30 @@ export function SearchClient({ initialQuery, initialKind }: SearchClientProps) {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <p className="text-[clamp(1.5rem,2.6vw,2.2rem)] font-semibold tracking-tight text-content">
-          {browsing ? "Browse films & series" : `Results for "${query}"`}
+          {browsing
+            ? freeTab
+              ? "Browse free titles"
+              : "Browse films & series"
+            : `Results for "${query}"`}
         </p>
         <p className="text-[13px] text-content-muted" aria-live="polite">
           {movieQuery.isFetching || tvQuery.isFetching
             ? browsing
-              ? "Loading the discovery feed..."
+              ? freeActive
+                ? "Loading the free discovery feed..."
+                : "Loading the discovery feed..."
               : "Searching..."
             : `${totalTitles} title${totalTitles === 1 ? "" : "s"}`}
         </p>
       </div>
+
+      {freeTab && (
+        <p className="text-[13px] text-content-muted" role="status">
+          {browsing
+            ? "Streaming free right now in the US (free, or free with ads). Offers are JustWatch data via TMDB and change often."
+            : "Search results are not free-filtered — text search cannot ask a provider for what it streams free. Clear the search to browse the free feed."}
+        </p>
+      )}
 
       {/* Query control */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -197,7 +222,11 @@ export function SearchClient({ initialQuery, initialKind }: SearchClientProps) {
           page={pages.movie}
           state={movieQuery.status}
           browse={browsing}
-          result={kind === "movie" || kind === "all" ? (movieQuery.data?.kinds.movie ?? null) : null}
+          result={
+            kind === "movie" || kind === "all" || kind === "free"
+              ? (movieQuery.data?.kinds.movie ?? null)
+              : null
+          }
           isFetching={movieQuery.isFetching}
           onPage={(next) => {
             gotoPage("movie", next);
@@ -214,7 +243,11 @@ export function SearchClient({ initialQuery, initialKind }: SearchClientProps) {
           page={pages.tv}
           state={tvQuery.status}
           browse={browsing}
-          result={kind === "tv" || kind === "all" ? (tvQuery.data?.kinds.tv ?? null) : null}
+          result={
+            kind === "tv" || kind === "all" || kind === "free"
+              ? (tvQuery.data?.kinds.tv ?? null)
+              : null
+          }
           isFetching={tvQuery.isFetching}
           onPage={(next) => {
             gotoPage("tv", next);

@@ -4,6 +4,8 @@ import Link from "next/link";
 import type { WatchRegionView } from "@/lib/normalize";
 
 const SLICE_LABELS = {
+  free: "Free",
+  ads: "Free + ads",
   flatrate: "Stream",
   rent: "Rent",
   buy: "Buy",
@@ -12,8 +14,9 @@ const SLICE_LABELS = {
 /**
  * "Where to watch" panel — US offer set from JustWatch (via TMDB's
  * watch/providers append). Honest states: the section only renders when a
- * US entry exists; slices render only when they have providers. TMDB
- * terms require the JustWatch credit alongside this data.
+ * US entry exists; slices render only when they have providers, and the
+ * free slices (free, free-with-ads) lead when present (M11). TMDB terms
+ * require the JustWatch credit alongside this data.
  */
 export function WatchPanel({ watch }: { watch: WatchRegionView | null | undefined }) {
   if (!watch || !watch.hasAny) return null;
@@ -41,9 +44,14 @@ export function WatchPanel({ watch }: { watch: WatchRegionView | null | undefine
         {(Object.keys(SLICE_LABELS) as Array<keyof typeof SLICE_LABELS>).map((slice) => {
           const providers = watch.slices[slice];
           if (!providers || providers.length === 0) return null;
+          const isFreeSlice = slice === "free" || slice === "ads";
           return (
             <div key={slice} className="flex flex-wrap items-center gap-2.5">
-              <span className="w-14 shrink-0 text-[11px] uppercase tracking-[0.14em] text-content-muted">
+              <span
+                className={`w-14 shrink-0 text-[11px] uppercase tracking-[0.14em] ${
+                  isFreeSlice ? "font-semibold text-content" : "font-normal text-content-muted"
+                }`}
+              >
                 {SLICE_LABELS[slice]}
               </span>
               <ul className="flex flex-wrap gap-1.5">

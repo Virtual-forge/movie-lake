@@ -147,7 +147,12 @@ export function pickYouTubeTrailer(
   return pick ? { key: pick.key, name: pick.name || undefined } : null;
 }
 
-const WATCH_SLICES = ["flatrate", "rent", "buy"] as const;
+/**
+ * Read order = display order: free offers lead the panel (M11), then the
+ * paid slices. Values mirror TMDB's watch/provider monetization keys —
+ * `free` = free catalog, `ads` = free entry funded by ads (JustWatch terms).
+ */
+const WATCH_SLICES = ["free", "ads", "flatrate", "rent", "buy"] as const;
 export type WatchSliceName = (typeof WATCH_SLICES)[number];
 
 export interface ProviderView {

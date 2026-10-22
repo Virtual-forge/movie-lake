@@ -147,10 +147,14 @@ export interface TmdbWatchProviderItem {
   display_priority?: number;
 }
 
-/** One country's offer set (link + flatrate/rent/buy provider lists). */
+/** One country's offer set (link + flatrate/free/ads/rent/buy provider lists). */
 export interface TmdbWatchProviderSet {
   link?: string | null;
   flatrate?: TmdbWatchProviderItem[];
+  /** JustWatch "Free" (ad-supported catalog where $0 is the standard price). */
+  free?: TmdbWatchProviderItem[];
+  /** JustWatch "Free with ads" tiers (free entry, ad-funded). */
+  ads?: TmdbWatchProviderItem[];
   rent?: TmdbWatchProviderItem[];
   buy?: TmdbWatchProviderItem[];
 }
@@ -275,6 +279,15 @@ export interface DiscoverOptions {
   ratingMin?: number;
   /** TMDB vote_average.lte (advanced search rating range). */
   ratingMax?: number;
+  /**
+   * with_watch_monetization_types value (verified live 2026-10-22, docs
+   * list flatrate|free|ads|rent|buy; pipe = OR). Requires watchRegion.
+   */
+  watchMonetization?: string;
+  /** Region the monetization/provider offer filters resolve against. */
+  watchRegion?: string;
+  /** with_watch_providers ids (JustWatch provider ids per TMDB docs). */
+  watchProviderIds?: string;
   page?: number;
 }
 
@@ -309,6 +322,9 @@ export async function discoverMovies(
     "vote_count.gte": options.minVoteCount,
     "vote_average.gte": options.ratingMin,
     "vote_average.lte": options.ratingMax,
+    watch_region: options.watchRegion,
+    with_watch_monetization_types: options.watchMonetization,
+    with_watch_providers: options.watchProviderIds,
     include_adult: "false",
     page: options.page,
   });
@@ -325,6 +341,9 @@ export async function discoverTv(
     "vote_count.gte": options.minVoteCount,
     "vote_average.gte": options.ratingMin,
     "vote_average.lte": options.ratingMax,
+    watch_region: options.watchRegion,
+    with_watch_monetization_types: options.watchMonetization,
+    with_watch_providers: options.watchProviderIds,
     include_adult: "false",
     page: options.page,
   });

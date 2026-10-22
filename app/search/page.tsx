@@ -31,7 +31,8 @@ export default function SearchPage({
 
 async function SearchResults({ searchParams }: { searchParams: SearchParams }) {
   const { q, kind } = await searchParams;
-  const initialKind: KindTab = kind === "movie" || kind === "tv" ? kind : "all";
+  const initialKind: KindTab =
+    kind === "movie" || kind === "tv" ? kind : kind === "free" ? "free" : "all";
   const initialQuery = q?.trim() ?? "";
   /**
    * `key` remounts the client whenever the URL contract changes: the
