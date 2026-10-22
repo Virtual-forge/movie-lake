@@ -13,6 +13,22 @@ import { prisma } from "./db";
  * Node process. Runtime credentials arrive via Next.js env loading
  * (`.env`/`.env.local`); Better Auth reads BETTER_AUTH_SECRET itself.
  */
+
+/**
+ * Browser origins allowed to call the auth API — Better Auth rejects
+ * cross-origin POSTs otherwise, and the deployment had BETTER_AUTH_URL set
+ * to an empty string, so prod registration/sign-in failed with
+ * "Invalid origin" (found by the first full auth-on-prod e2e sweep, M11).
+ * The option is ADDITIVE to Better Auth's own baseURL-derived origin
+ * (verified in the installed 1.7.12 `getTrustedOrigins`), so localhost dev
+ * keeps its default. `VERCEL_URL` is auto-injected per deployment, which
+ * covers the production domain and every preview URL at once.
+ */
+const trustedOrigins = [
+  process.env.BETTER_AUTH_URL || undefined,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
+].filter((origin): origin is string => Boolean(origin));
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -22,6 +38,7 @@ export const auth = betterAuth({
     /* Minimum password length below Better Auth's default 8 is not allowed. */
     minPasswordLength: 8,
   },
+  trustedOrigins,
   socialProviders: process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
     ? {
         google: {

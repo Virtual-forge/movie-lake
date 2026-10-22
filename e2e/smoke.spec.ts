@@ -133,6 +133,9 @@ test("desktop nav indicator glides between active items (M10)", async ({
     .click();
   await expect(page).toHaveURL(/kind=tv/);
   await expect(indicator).toBeVisible();
+  // Prod cold latency can catch the 200ms glide mid-flight; let it settle
+  // before measuring (the local suite is warm and fast, prod is not).
+  await page.waitForTimeout(400);
   const moved = await indicator.boundingBox();
   if (!moved) throw new Error("indicator vanished after navigation");
   // The bar physically relocates from Discover to Series.
