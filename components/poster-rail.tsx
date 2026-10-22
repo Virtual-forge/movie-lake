@@ -71,7 +71,13 @@ export function PosterRail({ title, items }: PosterRailProps) {
         ref={scroller}
         {...drag}
         onScroll={updateEdges}
-        className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-2 scrollbar-none cursor-grab active:cursor-grabbing"
+        /* contain-paint: while rails stream in, this ul's content was found
+           to widen the DOCUMENT's scrollable area (page pans sideways on a
+           phone and Chrome's pinch-out then renders a desktop-wide crop).
+           Paint containment makes the rail a hard paint island, ending the
+           leak; unlike overflow-x:hidden it does not break the sticky
+           header, and in-rail scrolling plus the drag hook are unchanged. */
+        className="contain-paint -mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-2 scrollbar-none cursor-grab active:cursor-grabbing"
       >
         {items.map((item, index) => (
           <li

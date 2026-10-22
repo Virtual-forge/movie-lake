@@ -44,7 +44,7 @@ export function GenreRow() {
         Find by
         <span className="block">genre</span>
       </h2>
-      <DragScroller className="-mx-1 flex min-w-0 flex-1 gap-2.5 overflow-x-auto px-1 py-1 scrollbar-none">
+      <DragScroller className="contain-paint -mx-1 flex min-w-0 flex-1 gap-2.5 overflow-x-auto px-1 py-1 scrollbar-none">
         {HOMEPAGE_CHIP_SLUGS.map((slug) => {
           const genre = GENRES_BY_SLUG[slug];
           const Icon = GENRE_ICONS[genre.slug];
