@@ -149,3 +149,43 @@ test("genre page films paginate through the URL", async ({ page }) => {
   const secondFirst = await page.locator('a[href^="/movie/"]').first();
   await expect(secondFirst).not.toHaveAttribute("href", firstName ?? "missing");
 });
+
+test("poster rails drag with the mouse and swallow the follow-up click (M9)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  // A poster rail (not the genre-chip row, which holds no card links).
+  const rail = page
+    .locator("section ul.cursor-grab")
+    .filter({ has: page.locator('a[href^="/movie/"]') })
+    .first();
+  const card = rail.locator('a[href^="/movie/"]').first();
+  await expect(card).toBeVisible({ timeout: 15_000 });
+
+  // Bring the card into the viewport: default 1280x720 view clips cards
+  // near the page bottom, and a cursor parked on clipped space hits
+  // nothing (elementFromPoint is null there).
+  await card.scrollIntoViewIfNeeded();
+  const box = await card.boundingBox();
+  if (!box) throw new Error("poster card did not render");
+  const startX = box.x + box.width / 2 + 40;
+  const y = box.y + 60;
+
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  // Real-timed CDP moves: pointer capture (engaged on pointerdown) keeps
+  // delivering them to the rail while the cursor wanders.
+  for (let i = 1; i <= 6; i += 1) {
+    await page.mouse.move(startX - i * 60, y);
+  }
+  await page.mouse.up();
+
+  const scrollLeft = await rail.evaluate((el) => Math.round(el.scrollLeft));
+  expect(scrollLeft).toBeGreaterThan(100);
+
+  // The click that follows a real drag must not open the card. Dispatched
+  // directly (a fresh locator click would start a new press and clear the
+  // suppression state first).
+  await card.evaluate((el) => (el as HTMLAnchorElement).click());
+  await expect(page).toHaveURL(/\/$/);
+});

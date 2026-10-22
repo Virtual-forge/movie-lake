@@ -1,12 +1,13 @@
 import Image from "next/image";
 import type { SeasonView } from "@/lib/listing-data";
+import { DragScroller } from "@/components/drag-scroller";
 
 /** Season posters row for series detail pages. */
 export function SeasonList({ seasons }: { seasons: SeasonView[] }) {
   return (
     <div className="flex flex-col">
       <h2 className="text-2xl font-semibold tracking-tight text-content">Seasons</h2>
-      <ul className="-mx-1 mt-4 flex gap-4 overflow-x-auto px-1 pb-2 scrollbar-none">
+      <DragScroller className="-mx-1 mt-4 flex gap-4 overflow-x-auto px-1 pb-2 scrollbar-none">
         {seasons.map((season) => (
           <li key={season.id} className="w-40 shrink-0">
             <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-surface ring-1 ring-border/50">
@@ -29,7 +30,7 @@ export function SeasonList({ seasons }: { seasons: SeasonView[] }) {
             </p>
           </li>
         ))}
-      </ul>
+      </DragScroller>
     </div>
   );
 }

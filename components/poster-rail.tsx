@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Listing } from "@/types/listing";
 import { PosterCard } from "@/components/poster-card";
+import { useDragScroll } from "@/components/use-drag-scroll";
 
 interface PosterRailProps {
   title: string;
@@ -13,6 +14,7 @@ interface PosterRailProps {
 export function PosterRail({ title, items }: PosterRailProps) {
   const scroller = useRef<HTMLUListElement>(null);
   const [scrolled, setScrolled] = useState({ left: false, right: true });
+  const drag = useDragScroll(scroller);
 
   function updateEdges() {
     const el = scroller.current;
@@ -67,15 +69,16 @@ export function PosterRail({ title, items }: PosterRailProps) {
 
       <ul
         ref={scroller}
+        {...drag}
         onScroll={updateEdges}
-        className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-2 scrollbar-none"
+        className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-2 scrollbar-none cursor-grab active:cursor-grabbing"
       >
         {items.map((item, index) => (
           <li
             key={item.route}
             className="w-[46vw] shrink-0 sm:w-[31vw] lg:w-[13.2%] lg:min-w-[160px]"
           >
-            <PosterCard item={item} eager={index < 3} />
+            <PosterCard item={item} eager={index < 3} entryIndex={index} />
           </li>
         ))}
       </ul>

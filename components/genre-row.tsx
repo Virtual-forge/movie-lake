@@ -17,6 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { GENRES_BY_SLUG, HOMEPAGE_CHIP_SLUGS, type GenreSlug } from "@/lib/genres";
+import { DragScroller } from "@/components/drag-scroller";
 
 const GENRE_ICONS: Record<GenreSlug, LucideIcon> = {
   action: Swords,
@@ -43,7 +44,7 @@ export function GenreRow() {
         Find by
         <span className="block">genre</span>
       </h2>
-      <ul className="-mx-1 flex min-w-0 flex-1 gap-2.5 overflow-x-auto px-1 py-1 scrollbar-none">
+      <DragScroller className="-mx-1 flex min-w-0 flex-1 gap-2.5 overflow-x-auto px-1 py-1 scrollbar-none">
         {HOMEPAGE_CHIP_SLUGS.map((slug) => {
           const genre = GENRES_BY_SLUG[slug];
           const Icon = GENRE_ICONS[genre.slug];
@@ -59,7 +60,7 @@ export function GenreRow() {
             </li>
           );
         })}
-      </ul>
+      </DragScroller>
     </section>
   );
 }

@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   const user = await getSessionUser();
   if (!user) return unauthorized();
 
-  const limit = rateLimit(`favorites:post:${user.id}`, { limit: 30 });
+  const limit = await rateLimit(`favorites:post:${user.id}`, { limit: 30 });
   if (!limit.ok) {
     return NextResponse.json(
       { error: "Too many favorite updates — try again in a minute." },
@@ -147,7 +147,7 @@ export async function DELETE(request: Request) {
   const user = await getSessionUser();
   if (!user) return unauthorized();
 
-  const limit = rateLimit(`favorites:delete:${user.id}`, { limit: 30 });
+  const limit = await rateLimit(`favorites:delete:${user.id}`, { limit: 30 });
   if (!limit.ok) {
     return NextResponse.json(
       { error: "Too many favorite updates — try again in a minute." },

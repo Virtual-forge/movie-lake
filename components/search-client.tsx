@@ -287,7 +287,7 @@ function KindSection({
           >
             {listings.map((item, index) => (
               <li key={item.route} className="min-w-0">
-                <PosterCard item={item} eager={index < 7} />
+                <PosterCard item={item} eager={index < 7} entryIndex={index} />
               </li>
             ))}
           </ul>

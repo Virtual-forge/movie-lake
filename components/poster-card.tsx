@@ -9,14 +9,30 @@ import { MetaRow } from "@/components/meta-row";
  *
  * `eager` marks above-the-fold cards so their posters don't pay lazy-load
  * cost while being the page's Largest Contentful Paint.
+ *
+ * `entryIndex` staggers the entrance slide (pure CSS, plays while content
+ * streams in; skipped entirely under prefers-reduced-motion — see the
+ * .card-in rules in globals.css).
  */
-export function PosterCard({ item, eager }: { item: Listing; eager?: boolean }) {
+export function PosterCard({
+  item,
+  eager,
+  entryIndex,
+}: {
+  item: Listing;
+  eager?: boolean;
+  entryIndex?: number;
+}) {
+  // 35ms per card, capped so late cards never wait half a second.
+  const delay =
+    entryIndex === undefined ? undefined : `${Math.min(entryIndex * 35, 385)}ms`;
   return (
     <Link
       href={item.route}
       // Default prefetch: App Router prefetches on viewport entry, which under
       // partialPrefetching streams the partial shell for detail routes.
-      className="group block min-w-0 scroll-ml-4 snap-start"
+      className="group block min-w-0 scroll-ml-4 snap-start card-in"
+      style={delay ? { animationDelay: delay } : undefined}
     >
       <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-surface ring-1 ring-transparent transition-[box-shadow] group-hover:ring-1 group-hover:ring-white/20">
         <Image

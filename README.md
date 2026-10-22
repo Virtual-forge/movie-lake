@@ -40,6 +40,10 @@ Gates: `pnpm exec tsc --noEmit` · `pnpm lint` · `pnpm test` · `pnpm build` ·
    - `DATABASE_URL` — Neon **pooled** connection string
    - `BETTER_AUTH_SECRET` — generate fresh: `openssl rand -base64 32`
    - `BETTER_AUTH_URL` — your production URL (previews: `https://${VERCEL_URL}`)
+   - Optional: `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` — swaps the
+     favorites rate limiter from per-instance memory to a shared Upstash sliding
+     window (set the same values on every environment so previews and prod share
+     one window)
 3. First boot with empty data: run `pnpm exec prisma migrate deploy` (and,
    if you want the curated free films, `pnpm exec prisma db seed`) against
    the Neon URL from a machine with the repo checked out.
